@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+
+{% block title %}Study Sessions{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3">Study Sessions</h1>
+            <a href="{{ url_for('create_session') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Create New Session
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Filter/Search Section -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h6 class="mb-2">
+                            <i class="fas fa-filter text-primary"></i> Showing sessions for your enrolled courses
+                        </h6>
+                        <small class="text-muted">
+                            You'll only see study sessions for courses you're enrolled in.
+                            <a href="{{ url_for('courses') }}">Manage your courses</a> to see more sessions.
+                        </small>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <span class="badge bg-info fs-6">
+                            <i class="fas fa-calendar"></i> {{ sessions|length }} Available Sessions
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sessions List -->
+<div class="row">
+    <div class="col-md-12">
+        {% if sessions %}
+            {% for session in sessions %}
+            <div class="card study-session-card mb-3">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-1">
+                                    {{ session.title }}
+                                    {% if session.is_creator %}
+                                        <span class="badge bg-warning text-dark ms-2">
+                                            <i class="fas fa-crown"></i> Your Session
+                                        </span>
+                                    {% endif %}
+                                </h5>
+                                <span class="badge bg-{% if session.status == 'open' %}success{% else %}secondary{% endif %}">
+                                    {{ session.status|title }}
+                                </span>
+                            </div>
+
+                            <h6 class="card-subtitle mb-3 text-primary">
+                                <i class="fas fa-book"></i> {{ session.course_code }} - {{ session.course_name }}
+                            </h6>
+
+                            {% if session.description %}
+                            <p class="card-text mb-2">
+                                <i class="fas fa-info-circle text-info"></i> {{ session.description }}
+                            </p>
+                            {% endif %}
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="card-text mb-1">
+                                        <i class="fas fa-user text-secondary"></i>
+                                        <strong>Organizer:</strong> {{ session.creator_name }}
+                                    </p>
+                                    <p class="card-text mb-1">
+                                        <i class="fas fa-calendar text-primary"></i>
+                                        <strong>Date:</strong> {{ session.session_date }}
+                                    </p>
+                                    <p class="card-text mb-1">
+                                        <i class="fas fa-clock text-success"></i>
+                                        <strong>Time:</strong> {{ session.session_time }} ({{ session.duration }} min)
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    {% if session.location %}
+                                    <p class="card-text mb-1">
+                                        <i class="fas fa-map-marker-alt text-danger"></i>
+                                        <strong>Location:</strong> {{ session.location }}
+                                    </p>
+                                    {% endif %}
+                                    <p class="card-text mb-1">
+                                        <i class="fas fa-users text-info"></i>
+                                        <strong>Participants:</strong>
+                                        <span class="{% if session.participant_count >= session.max_participants %}text-warning{% else %}text-success{% endif %}">
+                                            {{ session.participant_count }}/{{ session.max_participants }}
+                                        </span>
+                                    </p>
+                                    <p class="card-text mb-0">
+                                        <i class="fas fa-clock text-muted"></i>
+                                        <small class="text-muted">Created on {{ session.created_at[:10] if session.created_at else 'Unknown' }}</small>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="d-flex flex-column h-100 justify-content-between">
+                                <!-- Participation Status -->
+                                <div class="text-center mb-3">
+                                    {% if session.is_creator %}
+                                        <div class="alert alert-warning py-2 mb-2">
+                                            <i class="fas fa-cog"></i> <strong>You created this session</strong>
+                                        </div>
+                                        <button class="btn btn-outline-secondary btn-sm" disabled>
+                                            <i class="fas fa-tools"></i> Manage Session
+                                        </button>
+                                    {% else %}
+                                        {% if session.user_status == 'confirmed' %}
+                                            <div class="alert alert-success py-2 mb-2">
+                                                <i class="fas fa-check-circle"></i> <strong>You're attending!</strong>
+                                            </div>
+                                            <a href="{{ url_for('leave_session', session_id=session.id) }}"
+                                               class="btn btn-outline-danger btn-sm"
+                                               onclick="return confirm('Are you sure you want to leave this study session?')">
+                                                <i class="fas fa-sign-out-alt"></i> Leave Session
+                                            </a>
+                                        {% elif session.participant_count >= session.max_participants %}
+                                            <div class="alert alert-secondary py-2 mb-2">
+                                                <i class="fas fa-users"></i> <strong>Session Full</strong>
+                                            </div>
+                                            <button class="btn btn-secondary btn-sm" disabled>
+                                                <i class="fas fa-ban"></i> Cannot Join
+                                            </button>
+                                        {% else %}
+                                            <div class="alert alert-info py-2 mb-2">
+                                                <i class="fas fa-hand-paper"></i> <strong>Available to join</strong>
+                                            </div>
+                                            <a href="{{ url_for('join_session', session_id=session.id) }}"
+                                               class="btn btn-success btn-sm">
+                                                <i class="fas fa-plus"></i> Join Session
+                                            </a>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+
+                                <!-- Session Stats -->
+                                <div class="text-center">
+                                    <small class="text-muted">
+                                        {% if session.participant_count > 1 %}
+                                            <i class="fas fa-users"></i> {{ session.participant_count - 1 }} other student(s) joining
+                                        {% elif session.participant_count == 1 %}
+                                            <i class="fas fa-user"></i> Be the first to join!
+                                        {% else %}
+                                            <i class="fas fa-user-plus"></i> No participants yet
+                                        {% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- Pagination or Load More (Future Enhancement) -->
+            {% if sessions|length >= 10 %}
+            <div class="text-center mt-4">
+                <p class="text-muted">
+                    <i class="fas fa-info-circle"></i> Showing recent sessions.
+                    <a href="#" class="text-decoration-none">Load more sessions</a>
+                </p>
+            </div>
+            {% endif %}
+
+        {% else %}
+            <!-- Empty State -->
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-calendar-times fa-4x text-muted mb-4"></i>
+                    <h4 class="card-title text-muted">No Study Sessions Available</h4>
+                    <p class="card-text text-muted mb-4">
+                        There are currently no upcoming study sessions for your enrolled courses.
+                    </p>
+
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div class="alert alert-info">
+                                <h6 class="alert-heading">
+                                    <i class="fas fa-lightbulb"></i> What can you do?
+                                </h6>
+                                <hr>
+                                <ul class="list-unstyled mb-0 text-start">
+                                    <li class="mb-2">
+                                        <i class="fas fa-arrow-right text-primary"></i>
+                                        <a href="{{ url_for('create_session') }}" class="text-decoration-none">
+                                            Create the first study session
+                                        </a> for your courses
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-arrow-right text-primary"></i>
+                                        <a href="{{ url_for('courses') }}" class="text-decoration-none">
+                                            Enroll in more courses
+                                        </a> to see additional sessions
+                                    </li>
+                                    <li class="mb-0">
+                                        <i class="fas fa-arrow-right text-primary"></i>
+                                        Check back later as other students create sessions
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <a href="{{ url_for('create_session') }}" class="btn btn-primary btn-lg me-3">
+                            <i class="fas fa-plus"></i> Create Study Session
+                        </a>
+                        <a href="{{ url_for('courses') }}" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-book"></i> Browse Courses
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Quick Actions Section -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card bg-light">
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3 mb-3 mb-md-0">
+                        <a href="{{ url_for('create_session') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-plus"></i> Create Session
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3 mb-md-0">
+                        <a href="{{ url_for('courses') }}" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-book"></i> Manage Courses
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3 mb-md-0">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-info btn-sm">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-outline-success btn-sm" onclick="location.reload()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

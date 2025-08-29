@@ -1,0 +1,419 @@
+/* Study Buddy App - Custom Styles */
+
+:root {
+    --clemson-orange: #ff6600;
+    --clemson-purple: #522d80;
+    --clemson-light: #fff5f0;
+    --dark-orange: #e55a00;
+    --light-gray: #f8f9fa;
+    --medium-gray: #6c757d;
+    --success-green: #28a745;
+    --info-blue: #17a2b8;
+    --warning-yellow: #ffc107;
+}
+
+/* General Styles */
+body {
+    background-color: var(--light-gray);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+}
+
+/* Navigation */
+.navbar-brand {
+    font-weight: bold;
+    color: var(--clemson-orange) !important;
+    font-size: 1.5rem;
+    text-decoration: none;
+}
+
+.navbar-brand:hover {
+    color: var(--dark-orange) !important;
+}
+
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.nav-link {
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--clemson-orange) !important;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--clemson-orange);
+    border-color: var(--clemson-orange);
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover, 
+.btn-primary:focus {
+    background-color: var(--dark-orange);
+    border-color: var(--dark-orange);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(255, 102, 0, 0.3);
+}
+
+.btn-outline-primary {
+    color: var(--clemson-orange);
+    border-color: var(--clemson-orange);
+    font-weight: 500;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--clemson-orange);
+    border-color: var(--clemson-orange);
+    transform: translateY(-2px);
+}
+
+/* Cards */
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.card-header {
+    background: linear-gradient(135deg, var(--clemson-orange), var(--dark-orange));
+    color: white;
+    border-bottom: none;
+    font-weight: 600;
+}
+
+.card-header h4, 
+.card-header h5 {
+    margin: 0;
+    color: white;
+}
+
+/* Study Session Cards */
+.study-session-card {
+    border-left: 5px solid var(--clemson-orange);
+    background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+}
+
+.study-session-card:hover {
+    border-left-color: var(--dark-orange);
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, var(--clemson-light) 0%, #ffffff 50%, var(--light-gray) 100%);
+    border-radius: 15px;
+    padding: 3rem 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255, 102, 0, 0.1) 0%, transparent 70%);
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+.display-4 {
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.lead {
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--medium-gray);
+}
+
+/* Text Colors */
+.text-primary {
+    color: var(--clemson-orange) !important;
+}
+
+.text-success {
+    color: var(--success-green) !important;
+}
+
+.text-info {
+    color: var(--info-blue) !important;
+}
+
+.text-warning {
+    color: var(--warning-yellow) !important;
+}
+
+/* Badges */
+.badge {
+    font-weight: 500;
+    padding: 0.5em 0.75em;
+    border-radius: 6px;
+}
+
+.bg-primary {
+    background-color: var(--clemson-orange) !important;
+}
+
+/* Forms */
+.form-control:focus {
+    border-color: var(--clemson-orange);
+    box-shadow: 0 0 0 0.2rem rgba(255, 102, 0, 0.25);
+}
+
+.form-select:focus {
+    border-color: var(--clemson-orange);
+    box-shadow: 0 0 0 0.2rem rgba(255, 102, 0, 0.25);
+}
+
+.form-label {
+    font-weight: 500;
+    color: var(--medium-gray);
+}
+
+/* Alerts */
+.alert {
+    border-radius: 8px;
+    border: none;
+    font-weight: 500;
+}
+
+.alert-info {
+    background: linear-gradient(135deg, var(--clemson-light), #ffffff);
+    color: var(--dark-orange);
+    border-left: 4px solid var(--clemson-orange);
+}
+
+/* Stats Cards */
+.stats-card {
+    text-align: center;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.stats-card:hover {
+    background: linear-gradient(135deg, var(--clemson-light), #ffffff);
+    transform: scale(1.05);
+}
+
+.stats-card i {
+    margin-bottom: 1rem;
+}
+
+.stats-card h4 {
+    font-weight: 700;
+    color: var(--clemson-orange);
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Course Cards */
+.course-card {
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.course-card.border-success {
+    border-color: var(--success-green) !important;
+    border-width: 2px !important;
+    background: linear-gradient(135deg, #f8fff9 0%, #ffffff 100%);
+}
+
+.course-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* List Groups */
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid #eee;
+    padding: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.list-group-item:hover {
+    background-color: var(--clemson-light);
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+/* Icons */
+.fas, .far {
+    margin-right: 0.5rem;
+}
+
+.fa-3x {
+    margin-bottom: 1rem;
+    opacity: 0.7;
+}
+
+/* Loading Animation */
+.loading {
+    position: relative;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid transparent;
+    border-top: 2px solid var(--clemson-orange);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Footer */
+.footer {
+    background: linear-gradient(135deg, #343a40 0%, #495057 100%);
+    color: white;
+    padding: 2rem 0;
+    margin-top: 3rem;
+    text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 2rem 1rem;
+    }
+    
+    .display-4 {
+        font-size: 2rem;
+    }
+    
+    .lead {
+        font-size: 1.1rem;
+    }
+    
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .btn-lg {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    .hero-section {
+        margin: 0 -10px;
+        border-radius: 0;
+    }
+    
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+}
+
+/* Utility Classes */
+.shadow-sm {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+}
+
+.shadow {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+.shadow-lg {
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1) !important;
+}
+
+.border-orange {
+    border-color: var(--clemson-orange) !important;
+}
+
+.bg-orange {
+    background-color: var(--clemson-orange) !important;
+}
+
+.text-orange {
+    color: var(--clemson-orange) !important;
+}
+
+/* Animation Classes */
+.fade-in {
+    animation: fadeIn 0.6s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-up {
+    animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Focus States for Accessibility */
+.btn:focus,
+.form-control:focus,
+.form-select:focus {
+    outline: 2px solid var(--clemson-orange);
+    outline-offset: 2px;
+}
+
+/* Print Styles */
+@media print {
+    .navbar, .footer, .btn {
+        display: none !important;
+    }
+    
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    body {
+        background: white !important;
+    }
+}

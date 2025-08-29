@@ -1,0 +1,377 @@
+{% extends "base.html" %}
+
+{% block title %}Create Study Session{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title mb-0">
+                    <i class="fas fa-plus text-primary"></i> Create New Study Session
+                </h4>
+                <small class="text-muted">Organize a study group and invite your classmates</small>
+            </div>
+            <div class="card-body">
+                {% if not user_courses %}
+                    <!-- No Courses Enrolled Warning -->
+                    <div class="alert alert-warning">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-exclamation-triangle"></i> No Courses Enrolled
+                        </h6>
+                        <p class="mb-2">You need to enroll in at least one course before creating a study session.</p>
+                        <a href="{{ url_for('courses') }}" class="btn btn-warning btn-sm">
+                            <i class="fas fa-book"></i> Browse Courses
+                        </a>
+                    </div>
+                {% else %}
+                    <!-- Session Creation Form -->
+                    <form method="POST" id="sessionForm">
+                        <!-- Course and Title Row -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="course_id" class="form-label">
+                                    <i class="fas fa-book text-primary"></i> Course *
+                                </label>
+                                <select class="form-select" id="course_id" name="course_id" required>
+                                    <option value="">Choose a course...</option>
+                                    {% for course in user_courses %}
+                                        <option value="{{ course.id }}">
+                                            {{ course.course_code }} - {{ course.course_name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <div class="form-text">Select the course this study session is for</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="title" class="form-label">
+                                    <i class="fas fa-heading text-success"></i> Session Title *
+                                </label>
+                                <input type="text" class="form-control" id="title" name="title"
+                                       placeholder="e.g., Midterm Prep Session"
+                                       maxlength="100" required>
+                                <div class="form-text">Give your session a descriptive name</div>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <label for="description" class="form-label">
+                                <i class="fas fa-align-left text-info"></i> Description <small class="text-muted">(Optional)</small>
+                            </label>
+                            <textarea class="form-control" id="description" name="description" rows="3"
+                                      placeholder="What topics will you cover? What materials should participants bring? Any special preparation needed?"
+                                      maxlength="500"></textarea>
+                            <div class="form-text">
+                                <span id="charCount">0</span>/500 characters
+                            </div>
+                        </div>
+
+                        <!-- Date and Time Row -->
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="session_date" class="form-label">
+                                    <i class="fas fa-calendar text-primary"></i> Date *
+                                </label>
+                                <input type="date" class="form-control" id="session_date" name="session_date" required>
+                                <div class="form-text">When will the session take place?</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="session_time" class="form-label">
+                                    <i class="fas fa-clock text-success"></i> Start Time *
+                                </label>
+                                <input type="time" class="form-control" id="session_time" name="session_time" required>
+                                <div class="form-text">Session start time</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="duration" class="form-label">
+                                    <i class="fas fa-hourglass-half text-warning"></i> Duration *
+                                </label>
+                                <select class="form-select" id="duration" name="duration" required>
+                                    <option value="">Select duration...</option>
+                                    <option value="30">30 minutes</option>
+                                    <option value="60" selected>1 hour</option>
+                                    <option value="90">1.5 hours</option>
+                                    <option value="120">2 hours</option>
+                                    <option value="150">2.5 hours</option>
+                                    <option value="180">3 hours</option>
+                                    <option value="240">4 hours</option>
+                                </select>
+                                <div class="form-text">How long will the session last?</div>
+                            </div>
+                        </div>
+
+                        <!-- Location and Participants Row -->
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label for="location" class="form-label">
+                                    <i class="fas fa-map-marker-alt text-danger"></i> Location <small class="text-muted">(Optional)</small>
+                                </label>
+                                <input type="text" class="form-control" id="location" name="location"
+                                       placeholder="e.g., Cooper Library Study Room 203, Zoom Meeting, Student Union"
+                                       maxlength="100">
+                                <div class="form-text">Where will you meet? Include room numbers, building names, or online meeting links</div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="max_participants" class="form-label">
+                                    <i class="fas fa-users text-info"></i> Max Participants *
+                                </label>
+                                <select class="form-select" id="max_participants" name="max_participants" required>
+                                    <option value="">Choose size...</option>
+                                    <option value="2">2 people (Small group)</option>
+                                    <option value="3">3 people</option>
+                                    <option value="4" selected>4 people (Ideal)</option>
+                                    <option value="5">5 people</option>
+                                    <option value="6">6 people</option>
+                                    <option value="8">8 people (Large group)</option>
+                                    <option value="10">10 people (Workshop style)</option>
+                                </select>
+                                <div class="form-text">Including yourself</div>
+                            </div>
+                        </div>
+
+                        <!-- Session Preview -->
+                        <div class="card bg-light mb-4" id="sessionPreview" style="display: none;">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-eye text-primary"></i> Session Preview
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <h6 id="previewTitle">Session Title</h6>
+                                        <p class="text-muted mb-2" id="previewCourse">Course</p>
+                                        <p class="mb-2" id="previewDescription">Description</p>
+                                        <p class="mb-0">
+                                            <i class="fas fa-calendar text-primary"></i> <span id="previewDate">Date</span> at
+                                            <i class="fas fa-clock text-success"></i> <span id="previewTime">Time</span>
+                                            (<span id="previewDuration">Duration</span>)<br>
+                                            <span id="previewLocationSection" style="display: none;">
+                                                <i class="fas fa-map-marker-alt text-danger"></i> <span id="previewLocation">Location</span><br>
+                                            </span>
+                                            <i class="fas fa-users text-info"></i> Up to <span id="previewMaxParticipants">0</span> participants
+                                        </p>
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <span class="badge bg-success">Open</span><br>
+                                        <small class="text-muted">Created by {{ session.username }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <a href="{{ url_for('sessions') }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left"></i> Back to Sessions
+                                </a>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-outline-info me-2" id="previewBtn">
+                                    <i class="fas fa-eye"></i> Preview
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Create Session
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tips and Guidelines -->
+<div class="row justify-content-center mt-4">
+    <div class="col-md-10 col-lg-8">
+        <div class="card border-info">
+            <div class="card-header bg-info text-white">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-lightbulb"></i> Tips for Creating Effective Study Sessions
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-primary">
+                            <i class="fas fa-check-circle"></i> Best Practices
+                        </h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-arrow-right text-success"></i>
+                                Choose a specific topic or exam to focus on
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-arrow-right text-success"></i>
+                                Schedule 1-3 hours for productive study time
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-arrow-right text-success"></i>
+                                Pick a quiet location with good WiFi
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-arrow-right text-success"></i>
+                                Keep groups small (3-5 people) for better focus
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-warning">
+                            <i class="fas fa-exclamation-triangle"></i> Things to Include
+                        </h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-arrow-right text-warning"></i>
+                                What materials to bring (textbook, notes, laptop)
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-arrow-right text-warning"></i>
+                                Specific chapters or topics to review
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-arrow-right text-warning"></i>
+                                Study methods you plan to use (flashcards, practice problems)
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-arrow-right text-warning"></i>
+                                Contact information for coordination
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Set minimum date to today
+document.addEventListener('DOMContentLoaded', function() {
+    const dateInput = document.getElementById('session_date');
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.min = today;
+
+    // Character counter for description
+    const descriptionTextarea = document.getElementById('description');
+    const charCount = document.getElementById('charCount');
+
+    descriptionTextarea.addEventListener('input', function() {
+        const count = this.value.length;
+        charCount.textContent = count;
+
+        if (count > 450) {
+            charCount.classList.add('text-warning');
+        } else if (count > 480) {
+            charCount.classList.remove('text-warning');
+            charCount.classList.add('text-danger');
+        } else {
+            charCount.classList.remove('text-warning', 'text-danger');
+        }
+    });
+
+    // Preview functionality
+    const previewBtn = document.getElementById('previewBtn');
+    const preview = document.getElementById('sessionPreview');
+    let previewVisible = false;
+
+    previewBtn.addEventListener('click', function() {
+        if (previewVisible) {
+            preview.style.display = 'none';
+            previewBtn.innerHTML = '<i class="fas fa-eye"></i> Preview';
+            previewVisible = false;
+        } else {
+            updatePreview();
+            preview.style.display = 'block';
+            previewBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Preview';
+            previewVisible = true;
+        }
+    });
+
+    // Update preview when form fields change
+    const formFields = ['course_id', 'title', 'description', 'session_date', 'session_time', 'duration', 'location', 'max_participants'];
+    formFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('change', function() {
+                if (previewVisible) {
+                    updatePreview();
+                }
+            });
+
+            if (field.type === 'text' || field.tagName === 'TEXTAREA') {
+                field.addEventListener('input', function() {
+                    if (previewVisible) {
+                        updatePreview();
+                    }
+                });
+            }
+        }
+    });
+
+    function updatePreview() {
+        const courseSelect = document.getElementById('course_id');
+        const courseText = courseSelect.options[courseSelect.selectedIndex]?.text || 'No course selected';
+
+        document.getElementById('previewTitle').textContent =
+            document.getElementById('title').value || 'Untitled Session';
+        document.getElementById('previewCourse').textContent = courseText;
+
+        const description = document.getElementById('description').value;
+        const descElement = document.getElementById('previewDescription');
+        if (description) {
+            descElement.textContent = description;
+            descElement.style.display = 'block';
+        } else {
+            descElement.style.display = 'none';
+        }
+
+        document.getElementById('previewDate').textContent =
+            document.getElementById('session_date').value || 'No date selected';
+        document.getElementById('previewTime').textContent =
+            document.getElementById('session_time').value || 'No time selected';
+
+        const durationSelect = document.getElementById('duration');
+        const durationText = durationSelect.options[durationSelect.selectedIndex]?.text || 'No duration selected';
+        document.getElementById('previewDuration').textContent = durationText;
+
+        const location = document.getElementById('location').value;
+        const locationSection = document.getElementById('previewLocationSection');
+        if (location) {
+            document.getElementById('previewLocation').textContent = location;
+            locationSection.style.display = 'inline';
+        } else {
+            locationSection.style.display = 'none';
+        }
+
+        document.getElementById('previewMaxParticipants').textContent =
+            document.getElementById('max_participants').value || '0';
+    }
+
+    // Form validation
+    const form = document.getElementById('sessionForm');
+    form.addEventListener('submit', function(e) {
+        const dateValue = document.getElementById('session_date').value;
+        const timeValue = document.getElementById('session_time').value;
+
+        if (dateValue && timeValue) {
+            const sessionDateTime = new Date(dateValue + 'T' + timeValue);
+            const now = new Date();
+
+            if (sessionDateTime < now) {
+                e.preventDefault();
+                alert('Please select a future date and time for your study session.');
+                return false;
+            }
+        }
+
+        // Show loading state
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Session...';
+    });
+});
+</script>
+{% endblock %}

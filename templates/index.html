@@ -1,0 +1,55 @@
+<!-- templates/index.html -->
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto text-center">
+        <div class="hero-section py-5">
+            <h1 class="display-4 mb-4">
+                <i class="fas fa-graduation-cap text-primary"></i>
+                Study Buddy
+            </h1>
+            <p class="lead mb-4">Connect with Clemson classmates and organize study sessions.</p>
+
+            <div class="row mt-5">
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                            <h5>Find Study Partners</h5>
+                            <p>Connect with classmates in your courses.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-calendar-alt fa-3x text-success mb-3"></i>
+                            <h5>Schedule Sessions</h5>
+                            <p>Organize study sessions with flexible scheduling.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-book fa-3x text-info mb-3"></i>
+                            <h5>Course Integration</h5>
+                            <p>Manage all your courses in one place.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-5">
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg me-3">
+                    <i class="fas fa-user-plus"></i> Get Started
+                </a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
